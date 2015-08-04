@@ -10,9 +10,8 @@ public class SGD {
 	private ArrayList<Double> w;
 	private double[][] V;
 	
-	private double init_mean;
-	private double init_stdev;
-	private double eater;	// reg0
+
+	private double eater = 0.1;	// reg0, number:by intuition
 	private double lambda0;
 	private ArrayList<Double> lambdaW;
 	private double[][] lambdaV;
@@ -24,6 +23,8 @@ public class SGD {
 	
 	private int p;
 	private int k;
+	private int col;
+	private int row;
 	private HashMap<Integer, Double> record;
 	private double tg;
 	
@@ -107,14 +108,24 @@ public class SGD {
 		return ret;
 	}
 	
+	public void init(){
+		// Init Lambdas
+	}
+	
 	public OutputData learn(InputData id, Target tg){
 		this.id = id;
 		OutputData ret;
+		
+		this.col = id.getCol();
+		this.row = id.getRow();
+		
+		init();
 		
 		for(int r=0; r<id.getRow(); r++){
 			w0 = w0 - eater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
 			this.record = id.getOneRecord(r);
 			this.tg = tg.getOneTarget(r);
+			
 			for(int c=0; c<id.getCol(); c++){
 				double gradW = calcGrad(c, "w");
 				for(int f=0; f<k; f++){
