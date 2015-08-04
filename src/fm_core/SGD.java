@@ -21,13 +21,38 @@ public class SGD {
 	private InputData id;
 	private ArrayList<Tuple> groupRange;
 	
+	private int p;
+	private int k;
+	
 	public SGD(){
 		w0 = 0;
 		task = "regression";
 		// kakikake
 	}
 	
-	private
+	
+	public double predict(ArrayList<Double> x){
+		double ret=0;
+		if(task == "regression"){
+			ret += w0;
+			for(int i=0; i<p; i++){
+				ret += w.get(i) * x.get(i);
+			}
+			for(int f=0; f<k; f++){
+				double sumVjfXj = 0;
+				double sumV2jfX2j = 0;
+				for(int j=0; j<p; j++){
+					sumVjfXj += V[j][f] * x.get(j);
+					sumV2jfX2j += (V[j][f]*V[j][f] + x.get(j)*x.get(j));
+				}
+				sumVjfXj *= sumVjfXj; 
+				
+				ret += 0.5 * (sumVjfXj - sumV2jfX2j);
+			}
+		}
+		return ret;
+	}
+	
 	
 	public double calcGrad(int f, int pi, String differentiater){
 		if(task == "regression"){
@@ -51,7 +76,13 @@ public class SGD {
 	}
 	
 	private int pi(int c){
-		return groupRange[c];
+		int ret = -1;
+		for(int i=0; i<groupRange.size(); i++){
+			if(groupRange.get(i).getFirst() <= c && c <= groupRange.get(i).getSecond()){
+				ret = i;
+			}
+		}
+		return ret;
 	}
 	
 	public OutputData learn(InputData id, Target tg){

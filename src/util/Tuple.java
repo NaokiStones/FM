@@ -1,12 +1,19 @@
 package util;
 
-public class Tuple<A, B> {
-	public final A _a;
-	public final B _b;
+public class Tuple{
+	public final int _a;
+	public final int _b;
 	
-	public Tuple(A a, B b){
+	public Tuple(int a, int b){
 		_a = a;
 		_b = b;
+	}
+	
+	public int getFirst(){
+		return _a;
+	}
+	public int getSecond(){
+		return _b;
 	}
 
 }

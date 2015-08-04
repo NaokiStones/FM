@@ -14,7 +14,7 @@ public class InputData {
 	private ArrayList<String> names;
 	
 	public InputData(){
-		//
+		// kakikake
 		System.out.println("Please Input Data");
 	}
 	
