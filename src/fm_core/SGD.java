@@ -60,26 +60,41 @@ public class SGD {
 		return ret;
 	}
 	
-	
-	public double calcGrad(int f, int pi, String differentiater){
-		if(task == "regression"){
-			return 2 * (predict() - tg) * grad();
+	private double calcVGrad(int f){
+		double ret = 0;
+		for(int key:record.keySet()){
+			if(key == f){
+				continue;
+			}else{
+				ret += V[key][f] * record.get(key); 
+			}
 		}
+		return ret;
 	}
 	
-	public double calcGrad(int c, String differentiater){
+	private double calcGrad(int f, int pi, String differentiater){
+		double ret = 0;
+		if(task == "regression"){
+			ret = 2 * (predict() - tg) * calcVGrad(f);	// grad() => x_{l} * sum(v_{i,f} * x_{j})_{j != l}
+		}
+		return ret;
+	}
+	
+	private double calcGrad(int c, String differentiater){
+		double ret = 0;
 		if(task == "regression"){
 			if(differentiater == "w0"){
-				return 2 * (predict() - tg) * grad();
+				ret = 2 * (predict() - tg) * 1;	// grad() => 1
 			}else if(differentiater == "w"){
-				return 2 * (predict() - tg) * grad();
+				ret = 2 * (predict() - tg) * record.get(c);	// grad() => x_{l}
 			}else{
 				System.out.println("differentiater Parameter Mistake");
 				System.exit(1);
 			}
 		}else if(task == "classification"){
-
+			// add something...
 		}
+		return ret;
 	}
 	
 	private int pi(int c){
