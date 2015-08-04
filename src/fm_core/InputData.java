@@ -27,6 +27,9 @@ public class InputData {
 	public ArrayList<Tuple> getGroupRange(){
 		return groupRange;
 	}
+	public HashMap<Integer, Double> getOneRecord(int r){
+		return matrix.get(r);
+	}
 	
 	public InputData(double[][] dMatrix, int group, ArrayList<Tuple> groupRange, ArrayList<String> names){
 		// params initialization

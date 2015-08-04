@@ -1,6 +1,7 @@
 package fm_core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import util.Tuple;
 
@@ -23,6 +24,8 @@ public class SGD {
 	
 	private int p;
 	private int k;
+	private HashMap<Integer, Double> record;
+	private double tg;
 	
 	public SGD(){
 		w0 = 0;
@@ -31,19 +34,23 @@ public class SGD {
 	}
 	
 	
-	public double predict(ArrayList<Double> x){
+	
+	public double predict(){
 		double ret=0;
 		if(task == "regression"){
 			ret += w0;
-			for(int i=0; i<p; i++){
-				ret += w.get(i) * x.get(i);
+			for(int key:record.keySet()){
+				ret += key * record.get(key);
 			}
+
 			for(int f=0; f<k; f++){
 				double sumVjfXj = 0;
 				double sumV2jfX2j = 0;
-				for(int j=0; j<p; j++){
-					sumVjfXj += V[j][f] * x.get(j);
-					sumV2jfX2j += (V[j][f]*V[j][f] + x.get(j)*x.get(j));
+				
+	
+				for(int key:record.keySet()){
+					sumVjfXj += V[key][f] * record.get(key);
+					sumV2jfX2j += (V[key][f]*V[key][f] + record.get(key) * record.get(key));					
 				}
 				sumVjfXj *= sumVjfXj; 
 				
@@ -56,22 +63,22 @@ public class SGD {
 	
 	public double calcGrad(int f, int pi, String differentiater){
 		if(task == "regression"){
-			return 2 * (predict() - y) * grad();
+			return 2 * (predict() - tg) * grad();
 		}
 	}
 	
 	public double calcGrad(int c, String differentiater){
 		if(task == "regression"){
 			if(differentiater == "w0"){
-				return 2 * (predict() - y) * grad();
+				return 2 * (predict() - tg) * grad();
 			}else if(differentiater == "w"){
-				return 2 * (predict() - y) * grad();
+				return 2 * (predict() - tg) * grad();
 			}else{
 				System.out.println("differentiater Parameter Mistake");
 				System.exit(1);
 			}
 		}else if(task == "classification"){
-			
+
 		}
 	}
 	
@@ -88,8 +95,11 @@ public class SGD {
 	public OutputData learn(InputData id, Target tg){
 		this.id = id;
 		OutputData ret;
+		
 		for(int r=0; r<id.getRow(); r++){
 			w0 = w0 - eater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
+			this.record = id.getOneRecord(r);
+			this.tg = tg.getOneTarget(r);
 			for(int c=0; c<id.getCol(); c++){
 				double gradW = calcGrad(c, "w");
 				for(int f=0; f<k; f++){

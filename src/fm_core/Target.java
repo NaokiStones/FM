@@ -6,6 +6,9 @@ public class Target {
 	private String task;
 	private ArrayList<Double> target;
 	
+	public double getOneTarget(int r){
+		return target.get(r);
+	}
 	public Target(){
 		task = "regression";
 	}
