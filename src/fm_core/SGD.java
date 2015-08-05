@@ -1,5 +1,6 @@
 package fm_core;
 
+import java.awt.AlphaComposite;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ public class SGD {
 	private double[][] V;
 	
 
-	private double eater = 0.01;	// reg0, number:by intuition
+	private double eater = 0.1;	// reg0, number:by intuition
 	private double lambda0;
 	private ArrayList<Double> lambdaW = new ArrayList<Double>();
 	private double[][] lambdaV;
@@ -30,6 +31,9 @@ public class SGD {
 	private Random random = new Random();
 	private int groupNum;
 	private ArrayList<Double> results = new ArrayList<Double>();
+	private double alpha = 0.5;
+	private double t0 = 2;
+	private double power_t=0.1;
 	
 	public SGD(){
 		w0 = 0;
@@ -199,21 +203,25 @@ public class SGD {
 		
 		for(int i=0; i<200; i++){		// tmp
 			System.out.println(i);	//***********************
+			
+			//double tmpEater = eater / (t0 + i*0.1);
+			//double tmpEater = eater / Math.pow((i+1), power_t);
+			double tmpEater = 0.005;
 			for(int r=0; r<id.getRow(); r++){
-				w0 = w0 - eater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
+				w0 = w0 - tmpEater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
 				//System.out.println("w0:" + w0);	//**************
 				this.record = id.getOneRecord(r); 	// pick up one record
 				this.tg = tg.getOneTarget(r);		// pickup the target for the chosen record
 
 				for(int key:record.keySet()){
 					double gradWi = calcGrad(key, "w");
-					double nextWi = w.get(key) - eater * (gradWi + 2 * lambda0 * w0);
+					int groupOfKey = pi(key);
+					double nextWi = w.get(key) - tmpEater * (gradWi + 2 * lambdaW.get(groupOfKey) * w.get(key));
 					w.set(key, nextWi);
 					for(int f=0; f<k; f++){
 						double gradVij = calcGrad(key, f, pi(key), "v");
-						int groupOfKey = pi(key);
 						//System.out.println("key:" + key +  ", f:" + f + ", groupOfKey:" + groupOfKey); //******************
-						V[key][f] -= eater * (/*gradVij + */2 * lambdaV[f][groupOfKey] * V[key][f]);
+						V[key][f] -= tmpEater * (gradVij + 2 * lambdaV[f][groupOfKey] * V[key][f]);
 						// System.out.println("V[key][f]:" + V[key][f]); //***************
 					}
 				}
