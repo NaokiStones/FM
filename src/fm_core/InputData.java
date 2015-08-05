@@ -3,15 +3,14 @@ package fm_core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import util.Tuple;
 
 public class InputData {
 	private int row;
 	private int col;
 	private int group;
-	private ArrayList<HashMap<Integer, Double> > matrix;
-	private ArrayList<Integer> groupRangeUpperLimit;
-	private ArrayList<String> names;
+	private ArrayList<HashMap<Integer, Double>> matrix = new ArrayList<HashMap<Integer, Double>>();
+	private ArrayList<Integer> groupRangeUpperLimit = new ArrayList<Integer>();
+	private ArrayList<String> names = new ArrayList<String>();
 	
 	public InputData(){
 		// kakikake
