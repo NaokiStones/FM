@@ -2,6 +2,7 @@ package fm_core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import util.Tuple;
 
@@ -27,6 +28,8 @@ public class SGD {
 	private int row;
 	private HashMap<Integer, Double> record;
 	private double tg;
+	private Random random = new Random();
+	private int groupNum;
 	
 	public SGD(){
 		w0 = 0;
@@ -48,7 +51,6 @@ public class SGD {
 				double sumVjfXj = 0;
 				double sumV2jfX2j = 0;
 				
-	
 				for(int key:record.keySet()){
 					sumVjfXj += V[key][f] * record.get(key);
 					sumV2jfX2j += (V[key][f]*V[key][f] + record.get(key) * record.get(key));					
@@ -109,7 +111,28 @@ public class SGD {
 	}
 	
 	public void init(){
-		// Init Lambdas
+		// Initialize Lambdas
+		lambda0 = 0.1;	// tmp
+		for(int i=0; i<groupNum; i++){
+			lambdaW.add(0.1);	// tmp
+		}
+		lambdaV = new double[col][k];
+		for(int i=0; i<groupNum; i++){
+			for(int j=0; j<k; j++){
+				lambdaV[i][j] = 0.1;	// tmp
+			}
+		}
+		
+		// Initialize weights
+		w0 = 0;	
+		for(int i=0; i<col; i++){
+			w.add(0.0);
+		}
+		for(int i=0; i<row; i++){
+			for(int j=0; j<col; j++){
+				V[i][j] = random.nextGaussian();
+			}
+		}
 	}
 	
 	public OutputData learn(InputData id, Target tg){
@@ -118,19 +141,25 @@ public class SGD {
 		
 		this.col = id.getCol();
 		this.row = id.getRow();
+		this.groupNum = id.getGroup();
 		
 		init();
 		
-		for(int r=0; r<id.getRow(); r++){
-			w0 = w0 - eater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
-			this.record = id.getOneRecord(r);
-			this.tg = tg.getOneTarget(r);
-			
-			for(int c=0; c<id.getCol(); c++){
-				double gradW = calcGrad(c, "w");
-				for(int f=0; f<k; f++){
-					double gradV = calcGrad(c, f, "v");
-					V[c][f] = V[c][f] - eater * (gradV + 2 * lambdaV[f][pi(c)] * V[c][f]);
+		for(int i=0; i<100; i++){		// tmp
+			for(int r=0; r<id.getRow(); r++){
+				w0 = w0 - eater * (calcGrad(0, "w0") + 2 * lambda0 * w0);	// ?
+				this.record = id.getOneRecord(r); 	// pick up one record
+				this.tg = tg.getOneTarget(r);		// pickup the target for the chosen record
+
+				for(int key:record.keySet()){
+					double gradWi = calcGrad(key, "w");
+					double nextWi = w.get(key) - eater * (gradWi + 2 * lambda0 * w0);
+					w.set(key, nextWi);
+					for(int f=0; f<k; f++){
+						double gradVij = calcGrad(key, f, "v");
+						int groupOfKey = pi(key);
+						V[key][f] -= eater * (gradVij + 2 * lambdaV[f][groupOfKey] * V[key][f]);
+					}
 				}
 			}
 		}
