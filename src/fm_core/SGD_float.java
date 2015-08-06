@@ -258,13 +258,11 @@ public class SGD_float {
                     diff += d * d;
                 } else if(task.equals("classification")) {
                     if(y != predict(y, record)) {
-                        //System.out.println("tg:" + this.tg + ", predict:" + predict());	//****
-                        diff++;
+                         diff++;
                     }
                 }
             }
             // effect evaluation
-
             results.add(diff);
         }
 
