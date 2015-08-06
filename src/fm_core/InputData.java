@@ -2,15 +2,17 @@ package fm_core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class InputData {
 	private int row;
 	private int col;
 	private int group;
-	private ArrayList<HashMap<Integer, Double>> matrix = new ArrayList<HashMap<Integer, Double>>();
-	private ArrayList<Integer> groupRangeUpperLimit = new ArrayList<Integer>();
-	private ArrayList<String> names = new ArrayList<String>();
+	private List<Map<Integer, Double>> matrix = new ArrayList<Map<Integer, Double>>();
+	private int[] groupRangeUpperLimit = new ArrayList<Integer>();
+	private List<String> names = new ArrayList<String>();
 	
 	public InputData(){
 		// kakikake
@@ -27,14 +29,14 @@ public class InputData {
 	public int getGroup(){
 		return group;
 	}
-	public ArrayList<Integer> getGroupRangeUpperLimit(){
+	public List<Integer> getGroupRangeUpperLimit(){
 		return groupRangeUpperLimit;
 	}
-	public HashMap<Integer, Double> getOneRecord(int r){
+	public Map<Integer, Double> getOneRecord(int r){
 		return matrix.get(r);
 	}
 	
-	public InputData(double[][] dMatrix, int group, ArrayList<Integer> groupRange, ArrayList<String> names){
+	public InputData(double[][] dMatrix, int group, List<Integer> groupRange, List<String> names){
 		// params initialization
 		row = dMatrix.length;
 		col = dMatrix[0].length;

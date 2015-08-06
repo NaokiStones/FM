@@ -3,6 +3,7 @@ package fm_core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class SGD {
@@ -23,8 +24,8 @@ public class SGD {
     private int k;
     private int col;
     private int row;
-    private HashMap<Integer, Double> record = new HashMap<Integer, Double>();
-    private double tg;
+    //private HashMap<Integer, Double> record = new HashMap<Integer, Double>();
+    //private double y;
     private Random random = new Random();
     private int groupNum;
     private ArrayList<Double> results = new ArrayList<Double>();
@@ -38,12 +39,12 @@ public class SGD {
         random.setSeed(111);
         // kakikake
     }
-    
-    private double sigmoid(double x){
-    	return 1 / (1.0 + Math.exp(-1.0 * x));
+
+    private double sigmoid(double x) {
+        return 1 / (1.0 + Math.exp(-1.0 * x));
     }
 
-    private double predict() {
+    private double predict(double y) {
         double ret = 0;
         if(task.equals("regression") || task.equals("classification")) {
 
@@ -74,19 +75,19 @@ public class SGD {
 
             }
         }
-        
-        if(task.equals("classification")){
-        	if(this.tg == 1.0){
-        		ret = 1- sigmoid(ret);
-        	}else{
-        		ret = sigmoid(ret);
-        	}
-        	//System.out.println("ret" + ret);	//****
-        	if(ret < 0.5){	// magic number
-        		ret = 0.0;
-        	}else{
-        		ret = 1.0;
-        	}
+
+        if(task.equals("classification")) {
+            if(y == 1.0) {
+                ret = 1 - sigmoid(ret);
+            } else {
+                ret = sigmoid(ret);
+            }
+            //System.out.println("ret" + ret);	//****
+            if(ret < 0.5) { // magic number
+                ret = 0.0;
+            } else {
+                ret = 1.0;
+            }
         }
         //System.out.println("ret:" + ret);//************************
         if(Double.isNaN(ret)) {
@@ -119,26 +120,26 @@ public class SGD {
         return ret;
     }
 
-    private double calcGrad(int key, int f, int pi, String differentiater) {
+    private double calcGrad(int key, int f, double y, String differentiater) {
         double ret = 0;
         if(task.equals("regression")) {
-            ret = 2 * (predict() - tg) * calcVGrad(key, f); // grad() => x_{l} * sum(v_{i,f} * x_{j})_{j != l}
-        }else if(task.equals("classification")){
-        	ret = (sigmoid(predict()) -1) * this.tg * calcVGrad(key, f);
-        }else{
-        	System.out.println("task");
-        	System.exit(1);
+            ret = 2 * (predict() - y) * calcVGrad(key, f); // grad() => x_{l} * sum(v_{i,f} * x_{j})_{j != l}
+        } else if(task.equals("classification")) {
+            ret = (sigmoid(predict()) - 1) * y * calcVGrad(key, f);
+        } else {
+            System.out.println("task");
+            System.exit(1);
         }
         return ret;
     }
 
-    private double calcGrad(int c, String differentiater) {
+    private double calcGrad(int c, double y, String differentiater) {
         double ret = 0;
         if(task.equals("regression")) {
             if(differentiater.equals("w0")) {
-                ret = 2 * (predict() - tg) * 1; // grad() => 1
+                ret = 2 * (predict() - y) * 1; // grad() => 1
             } else if(differentiater.equals("w")) {
-                ret = 2 * (predict() - tg) * record.get(c); // grad() => x_{l}
+                ret = 2 * (predict() - y) * record.get(c); // grad() => x_{l}
             } else {
                 System.out.println("differentiater Parameter Mistake");
                 System.exit(1);
@@ -147,9 +148,9 @@ public class SGD {
         } else if(task.equals("classification")) {
             // add something...
             if(differentiater.equals("w0")) {
-                ret = sigmoid(predict() * this.tg - 1) * this.tg * 1;
+                ret = sigmoid(predict() * this.y - 1) * this.y * 1;
             } else if(differentiater.equals("w")) {
-            	ret = sigmoid(predict() * this.tg - 1) * this.tg * record.get(c);
+                ret = sigmoid(predict() * this.y - 1) * this.y * record.get(c);
             } else {
                 System.out.println("differentiater Parameter Mistake");
                 System.exit(1);
@@ -224,46 +225,48 @@ public class SGD {
 
         init();
 
-        int i = 0;
+        int t = 0;
         for(int iter = 0; iter < 100; iter++) { // tmp
             System.out.println(iter); //***********************
             double diff = 0;
-            for(int r = 0; r < id.getRow(); r++, i++) {
-                //double tmpEta = eater / (t0 + i*0.1);
-                //double tmpEta = eater / Math.pow((i + 1), power_t);
-                double tmpEta = 0.005;
+            for(int p = 0; p < id.getRow(); p++, i++) {
+                //double tmpEta = eater / (t0 + t*0.1);
+                //double tmpEta = eater / Math.pow((t + 1), power_t);
+                double eta = 0.005;
 
-                w0 = w0 - tmpEta * (calcGrad(0, "w0") + 2 * lambda0 * w0); 
+                Map<Integer, Double> record = id.getOneRecord(p); // pick up one record
+                double y = tg.getOneTarget(p); // pickup the target for the chosen record
+                
+                w0 = w0 - eta * (calcGrad(0, y, "w0") + 2 * lambda0 * w0);
                 //System.out.println("w0:" + w0);//**************
-                this.record = id.getOneRecord(r); // pick up one record
-                this.tg = tg.getOneTarget(r); // pickup the target for the chosen record
 
-
-                for(int key : record.keySet()) {
-                    double gradWi = calcGrad(key, "w");
-                    int groupOfKey = pi(key);
-                    double nextWi = w.get(key) - tmpEta
-			* (gradWi + 2 * lambdaW.get(groupOfKey) * w.get(key));
-                    w.set(key, nextWi);
+                for(int i : record.keySet()) {
+                    double gradWi = calcGrad(i, y, "w");  // dloss(predict("w", i), y);
+                    int pi = pi(i);
+                    double nextWi = w.get(i) - eta
+                            * (gradWi + 2 * lambdaW.get(pi) * w.get(i));
+                    w.set(i, nextWi);
                     for(int f = 0; f < k; f++) {
-                        double gradVij = calcGrad(key, f, pi(key), "v");
+                        double gradVij = calcGrad(i, f, pi, y, "v"); // dloss(predict("v", i, f), y)
                         //System.out.println("key:" + key +  ", f:" + f + ", groupOfKey:" + groupOfKey); //******************
-                        V[key][f] -= tmpEta * (gradVij + 2 * lambdaV[f][groupOfKey] * V[key][f]);
+                        V[i][f] -= eta * (gradVij + 2 * lambdaV[f][pi] * V[i][f]);
                         // System.out.println("V[key][f]:" + V[key][f]); //***************
                     }
-                    
+
                 }
-                if(task.equals("regression")){
-                	diff += (this.tg - predict()) * (this.tg - predict());
-                }else if(task.equals("classification")){
-                	if(this.tg != predict()){
-                		//System.out.println("tg:" + this.tg + ", predict:" + predict());	//****
-                		diff++;
-                	}
+                if(task.equals("regression")) {
+                    double p = predict(y);
+                    d = y - p;
+                    diff += d * d;
+                } else if(task.equals("classification")) {
+                    if(y != predict(y)) {
+                        //System.out.println("tg:" + this.tg + ", predict:" + predict());	//****
+                        diff++;
+                    }
                 }
             }
             // effect evaluation
-               
+
             results.add(diff);
         }
 
