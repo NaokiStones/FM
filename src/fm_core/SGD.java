@@ -35,7 +35,7 @@ public class SGD {
     private double alpha = 0.5;
     private double t0 = 2;
     private double power_t = 0.1;
-    private double adaInitNum = 0.1;
+    private double adaInitNum = 10.0;
 
     public SGD() {
         w0 = 0;
@@ -313,18 +313,18 @@ public class SGD {
                 Map<Integer, Double> record = id.getOneRecord(p); // pick up one record
                 double y = tg.getOneTarget(p); // pickup the target for the chosen record
                 
-                w0 = w0 - eta * (calcGrad(0, record, y, "w0") * ada0() + 2 * lambda0 * w0);
+                w0 = w0 - eta * ada0() * (calcGrad(0, record, y, "w0")  + 2 * lambda0 * w0);
                 //System.out.println("w0:" + w0);//**************
 
                 for(int i : record.keySet()) {
                     double gradWi = calcGrad(i, record, y, "w");  // dloss(predict("w", i), y);
                     int pi = pi(i);
-                    double nextWi = w[i] - eta * (gradWi * adaW(i) + 2 * lambdaW.get(pi) * w[i]);
+                    double nextWi = w[i] - eta* adaW(i) * (gradWi  + 2 * lambdaW.get(pi) * w[i]);
                     w[i] = nextWi;
                     for(int f = 0; f < k; f++) {
                         double gradVij = dloss(predict(y, record), y, i, f, "v", record);	//calcGradV(i, f, pi, y, "v"); // dloss(predict("v", i, f), y)
                         //System.out.println("key:" + key +  ", f:" + f + ", groupOfKey:" + groupOfKey); //******************
-                        V[i][f] -= eta * (gradVij * adaV(i, f) + 2 * lambdaV[f][pi] * V[i][f]);
+                        V[i][f] -= eta * adaV(i, f) * (gradVij  + 2 * lambdaV[f][pi] * V[i][f]);
                         // System.out.println("V[key][f]:" + V[key][f]); //***************
                     }
 
