@@ -13,13 +13,13 @@ public class SGD_Classification_Test {
 		// test case
 		double[][] testMatrix = new double[100][300]; 
 		int group = 2;	// group数
-		ArrayList<Integer> groupRange = new ArrayList<Integer>();
-		groupRange.add(150);
-		groupRange.add(150);
+		int[] groupRange = new int[group];
+		groupRange[0] = 150;
+		groupRange[1] = 150;
 
-		ArrayList<String> names = new ArrayList<String>();
-		names.add("name1");
-		names.add("name2");
+		String[] names = new String[group];
+		names[0] = "name1";
+		names[1] = "name2";
 
 		ArrayList<Double> tg_classification = new ArrayList<Double>();
 

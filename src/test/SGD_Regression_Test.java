@@ -13,14 +13,16 @@ public class SGD_Regression_Test {
 		// test case
 		double[][] testMatrix = new double[100][300]; 
 		int group = 3;	// group数
-		ArrayList<Integer> groupRange = new ArrayList<Integer>();
-		groupRange.add(30);
-		groupRange.add(100);
-		groupRange.add(170);
-		ArrayList<String> names = new ArrayList<String>();
-		names.add("name1");
-		names.add("name2");
-		names.add("name3");
+		int[] groupRange = new int[group];
+		groupRange[0] = 30;
+		groupRange[1] = 100;
+		groupRange[2] = 170;
+
+		String[] names = new String[group];
+		names[0] = "name1";
+		names[1] = "name2";
+		names[2] = "name3";
+	
 
 		ArrayList<Double> tg_regression = new ArrayList<Double>();
 
