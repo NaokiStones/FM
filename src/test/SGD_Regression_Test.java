@@ -27,6 +27,7 @@ public class SGD_Regression_Test {
 		ArrayList<Double> tg_regression = new ArrayList<Double>();
 
 		Random random = new Random();
+		random.setSeed(117);
 		// matrix for regression
 		for(int i=0; i<100; i++){
 			for(int j=0; j<300; j++){
@@ -43,7 +44,7 @@ public class SGD_Regression_Test {
 					tg_regression.add(700.0);
 					if(j<100){
 						if(random.nextDouble() < 0.2){
-							testMatrix[i][j] = 0.007*random.nextDouble();
+							testMatrix[i][j] = 0.007*random.nextFloat();	// tmp
 						}else{
 							testMatrix[i][j] = 0;
 						}
@@ -54,7 +55,7 @@ public class SGD_Regression_Test {
 					tg_regression.add(100.0);
 					if(j <= 100 && j<200){
 						if(random.nextDouble() < 0.3){
-							testMatrix[i][j] = 0.003*random.nextDouble();
+							testMatrix[i][j] = 0.003*random.nextFloat();	//tmp
 						}else{
 							testMatrix[i][j] = 0;
 						}					
@@ -65,7 +66,7 @@ public class SGD_Regression_Test {
 					tg_regression.add(300.0);
 					if(j<=200){
 						if(random.nextDouble() < 0.2){
-							testMatrix[i][j] = 0.0002*random.nextDouble();
+							testMatrix[i][j] = 0.0002*random.nextFloat();	//tmp
 						}else{
 							testMatrix[i][j] = 0;
 						}

@@ -30,6 +30,7 @@ public class SGD_Regression_Float_Test {
 		ArrayList<Double> tg_regression = new ArrayList<Double>();
 
 		Random random = new Random();
+		random.setSeed(117);
 		// matrix for regression
 		for(int i=0; i<100; i++){
 			for(int j=0; j<300; j++){

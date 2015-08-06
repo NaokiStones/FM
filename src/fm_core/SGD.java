@@ -10,6 +10,10 @@ public class SGD {
     private double w0;
     private double[] w;
     private double[][] V;
+    
+    private double ada0Grad;
+    private double[] adaWGrad;
+    private double[][] adaVGrad;
 
     private double eta = 0.1; // reg0, number:by intuition
     private double lambda0;
@@ -31,6 +35,7 @@ public class SGD {
     private double alpha = 0.5;
     private double t0 = 2;
     private double power_t = 0.1;
+    private double adaInitNum = 0.1;
 
     public SGD() {
         w0 = 0;
@@ -116,6 +121,8 @@ public class SGD {
             }
         }
         ret *= record.get(l);
+        adaVGrad[l][f] += ret*ret;	// AdaGrad for V(l, f)
+        // System.out.println("adaVGrad:" + adaVGrad[l][f]);	//****
         return ret;
     }
 
@@ -137,8 +144,11 @@ public class SGD {
         if(task.equals("regression")) {
             if(differentiater.equals("w0")) {
                 ret = 2 * (predict(y, record) - y) * 1; // grad() => 1
+                ada0Grad++;	// AdaGrad for w0
             } else if(differentiater.equals("w")) {
-                ret = 2 * (predict(y, record) - y) * record.get(c); // grad() => x_{l}
+                double xl = record.get(c);
+            	ret = 2 * (predict(y, record) - y) * xl; // grad() => x_{l}
+                adaWGrad[c] += xl*xl;		// AdaGrad for w_{l}
             } else {
                 System.out.println("differentiater Parameter Mistake");
                 System.exit(1);
@@ -209,6 +219,14 @@ public class SGD {
                 //******************************
             }
         }
+        
+        // initialize AdaGrad
+        
+        ada0Grad = adaInitNum;
+        adaWGrad = new double[this.col];
+        Arrays.fill(adaWGrad, adaInitNum);
+        adaVGrad = new double[this.col][k];
+        for(int i=0;i<this.col; i++) Arrays.fill(adaVGrad[i], adaInitNum);
     }
     
     public double dloss(double predicted, double y, int i, int f, String differentiater, Map<Integer, Double> record){
@@ -219,6 +237,55 @@ public class SGD {
     	}else if(task.equals("classification")){
     		ret = sigmoid(predicted * y * calcVGrad(i, f, record));
     	}
+    	return ret;
+    }
+    
+    public double ada0(){
+    	double ret = Math.sqrt(1 / ada0Grad);
+    	//***********
+    	if(Double.isNaN(ret)){
+    		try {
+    			System.out.println("Ada0");
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	//***********
+    	return ret;
+    }
+    
+    public double adaW(int i){
+
+    	double ret = Math.sqrt(1 / adaWGrad[i]);
+    	//**********
+    	if(Double.isNaN(ret)){
+    		try {
+    			System.out.println("AdaW");
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	//**********
+    	return ret;
+    }
+    
+    public double adaV(int i, int f){
+    	double ret = Math.sqrt(1 / adaVGrad[i][f]);
+    	//**************
+    	if(Double.isNaN(ret)){
+    		try {
+    			System.out.println("AdaV");
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	//**************
     	return ret;
     }
 
@@ -239,25 +306,25 @@ public class SGD {
             System.out.println(iter); //***********************
             double diff = 0;
             for(int p = 0; p < id.getRow(); p++, t++) {
-                //double tmpEta = eater / (t0 + t*0.1);
+                // double eta = this.eta / (t0 + t*0.1);
                 //double tmpEta = eater / Math.pow((t + 1), power_t);
                 double eta = 0.005;
 
                 Map<Integer, Double> record = id.getOneRecord(p); // pick up one record
                 double y = tg.getOneTarget(p); // pickup the target for the chosen record
                 
-                w0 = w0 - eta * (calcGrad(0, record, y, "w0") + 2 * lambda0 * w0);
+                w0 = w0 - eta * (calcGrad(0, record, y, "w0") * ada0() + 2 * lambda0 * w0);
                 //System.out.println("w0:" + w0);//**************
 
                 for(int i : record.keySet()) {
                     double gradWi = calcGrad(i, record, y, "w");  // dloss(predict("w", i), y);
                     int pi = pi(i);
-                    double nextWi = w[i] - eta * (gradWi + 2 * lambdaW.get(pi) * w[i]);
+                    double nextWi = w[i] - eta * (gradWi * adaW(i) + 2 * lambdaW.get(pi) * w[i]);
                     w[i] = nextWi;
                     for(int f = 0; f < k; f++) {
                         double gradVij = dloss(predict(y, record), y, i, f, "v", record);	//calcGradV(i, f, pi, y, "v"); // dloss(predict("v", i, f), y)
                         //System.out.println("key:" + key +  ", f:" + f + ", groupOfKey:" + groupOfKey); //******************
-                        V[i][f] -= eta * (gradVij + 2 * lambdaV[f][pi] * V[i][f]);
+                        V[i][f] -= eta * (gradVij * adaV(i, f) + 2 * lambdaV[f][pi] * V[i][f]);
                         // System.out.println("V[key][f]:" + V[key][f]); //***************
                     }
 

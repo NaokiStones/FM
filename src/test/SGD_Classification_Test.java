@@ -24,7 +24,7 @@ public class SGD_Classification_Test {
 		ArrayList<Double> tg_classification = new ArrayList<Double>();
 
 		Random random = new Random();
-		
+		random.setSeed(117);
 		// matrix for classification
 		for(int i=0; i<100; i++){
 			if(i < 50){

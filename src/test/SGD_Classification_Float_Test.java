@@ -24,6 +24,7 @@ public class SGD_Classification_Float_Test {
 		ArrayList<Double> tg_classification = new ArrayList<Double>();
 
 		Random random = new Random();
+		random.setSeed(117);
 		
 		// matrix for classification
 		for(int i=0; i<100; i++){
@@ -57,8 +58,5 @@ public class SGD_Classification_Float_Test {
 		Target target = new Target(tg_classification);
 		SGD_float sgd = new SGD_float();
 		OutputData_Float outputData = sgd.learn(inputData, target, 20, "classification");
-		//System.out.println("OutputData");	//*****
-		//System.out.println("w0" + outputData.w0);		//****
-		//System.out.println("w0" + outputData.w);		//****
 	}
 }
