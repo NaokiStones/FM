@@ -11,13 +11,12 @@ public class InputData {
 	private int col;
 	private int group;
 	private List<Map<Integer, Double>> matrix = new ArrayList<Map<Integer, Double>>();
-	private int[] groupRangeUpperLimit = new ArrayList<Integer>();
-	private List<String> names = new ArrayList<String>();
+	private int[] groupRangeUpperLimit;
+	private String[] names;
 	
 	public InputData(){
 		// kakikake
 		System.out.println("Please Input Data");
-		groupRangeUpperLimit = new ArrayList<Integer>();
 	}
 	
 	public int getRow(){
@@ -29,14 +28,14 @@ public class InputData {
 	public int getGroup(){
 		return group;
 	}
-	public List<Integer> getGroupRangeUpperLimit(){
+	public int[] getGroupRangeUpperLimit(){
 		return groupRangeUpperLimit;
 	}
 	public Map<Integer, Double> getOneRecord(int r){
 		return matrix.get(r);
 	}
 	
-	public InputData(double[][] dMatrix, int group, List<Integer> groupRange, List<String> names){
+	public InputData(double[][] dMatrix, int group, int[] groupRange, String[] names){
 		// params initialization
 		row = dMatrix.length;
 		col = dMatrix[0].length;
@@ -60,14 +59,15 @@ public class InputData {
 		
 		// Make Group Range Upper Limit
 		boolean flag = false;
-		for(int i=0; i<groupRangeUpperLimit.size(); i++){
+		for(int i=0, GRUL_Length = groupRangeUpperLimit.length; i< GRUL_Length; i++){
 			if(!flag){
-				groupRangeUpperLimit.set(i, groupRangeUpperLimit.get(i)-1);
+				groupRangeUpperLimit[i] = groupRangeUpperLimit[i] -1;
 				flag = true;
 				continue;
 			}
 			if(i >= 1){
-				groupRangeUpperLimit.set(i, groupRangeUpperLimit.get(i-1) + groupRangeUpperLimit.get(i));
+				groupRangeUpperLimit[i] += groupRangeUpperLimit[i-1];
+				//groupRangeUpperLimit.set(i, groupRangeUpperLimit[i-1] + groupRangeUpperLimit[i]));
 			}
 		}
 	}
