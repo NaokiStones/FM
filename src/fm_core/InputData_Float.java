@@ -5,17 +5,16 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputData {
+public class InputData_Float{
 	private int row;
 	private int col;
 	private int group;
-	private List<Map<Integer, Double>> matrix;
+	private List<Map<Integer, Float>> matrix;
 	private int[] groupRangeUpperLimit;
 	private String[] names;
 	
-	public InputData(){
-		// kakikake
-		System.out.println("Please Input Data");
+	public InputData_Float(){
+	
 	}
 	
 	public int getRow(){
@@ -30,11 +29,11 @@ public class InputData {
 	public int[] getGroupRangeUpperLimit(){
 		return groupRangeUpperLimit;
 	}
-	public Map<Integer, Double> getOneRecord(int r){
+	public Map<Integer, Float> getOneRecord(int r){
 		return matrix.get(r);
 	}
 	
-	public InputData(double[][] dMatrix, int group, int[] groupRange, String[] names){
+	public InputData_Float(float[][] dMatrix, int group, int[] groupRange, String[] names){
 		// params initialization
 		row = dMatrix.length;
 		col = dMatrix[0].length;
@@ -42,18 +41,18 @@ public class InputData {
 		this.groupRangeUpperLimit = groupRange;
 		this.names = names;
 		
-		 matrix = new ArrayList<Map<Integer, Double>>();
+		 matrix = new ArrayList<Map<Integer, Float>>();
 		
 		// prepare Matrix
 		for(int i=0; i<row; i++){
-			matrix.add(new HashMap<Integer, Double>());
+			matrix.add(new HashMap<Integer, Float>());
 		}
 		
 		// Input row Matrix to this Matrix
 		for(int i=0; i<row; i++){
 			for(int j=0; j<col; j++){
 				if(dMatrix[i][j] != 0.0){
-					matrix.get(i).put(j, (double)dMatrix[i][j]);
+					matrix.get(i).put(j, dMatrix[i][j]);
 				}
 			}
 		}

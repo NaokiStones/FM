@@ -1,7 +1,5 @@
 package fm_core;
 
-import java.util.ArrayList;
-
 public class OutputData {
 	public double w0;
 	public double[] w;
