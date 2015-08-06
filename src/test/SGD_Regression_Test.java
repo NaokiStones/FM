@@ -22,9 +22,10 @@ public class SGD_Regression_Test {
 		names.add("name2");
 		names.add("name3");
 
-		ArrayList<Double> tg = new ArrayList<Double>();
+		ArrayList<Double> tg_regression = new ArrayList<Double>();
 
 		Random random = new Random();
+		// matrix for regression
 		for(int i=0; i<100; i++){
 			for(int j=0; j<300; j++){
 				if(j < 3){
@@ -37,7 +38,7 @@ public class SGD_Regression_Test {
 					}
 					
 				}else if(i < 30){
-					tg.add(700.0);
+					tg_regression.add(700.0);
 					if(j<100){
 						if(random.nextDouble() < 0.2){
 							testMatrix[i][j] = 0.007*random.nextDouble();
@@ -48,7 +49,7 @@ public class SGD_Regression_Test {
 						testMatrix[i][j] = 0;
 					}
 				}else if(i <40){
-					tg.add(100.0);
+					tg_regression.add(100.0);
 					if(j <= 100 && j<200){
 						if(random.nextDouble() < 0.3){
 							testMatrix[i][j] = 0.003*random.nextDouble();
@@ -59,7 +60,7 @@ public class SGD_Regression_Test {
 						testMatrix[i][j] = 0;
 					}
 				}else{
-					tg.add(300.0);
+					tg_regression.add(300.0);
 					if(j<=200){
 						if(random.nextDouble() < 0.2){
 							testMatrix[i][j] = 0.0002*random.nextDouble();
@@ -72,12 +73,17 @@ public class SGD_Regression_Test {
 				}
 			}
 		}
+		
+
+		
+		// 
 		InputData inputData = new InputData(testMatrix, group, groupRange, names);
-		Target target = new Target(tg);
+		Target target = new Target(tg_regression);
+		//Target target = new Target(tg_classification);
 		SGD sgd = new SGD();
-		OutputData outputData = sgd.learn(inputData, target, 20);
-		System.out.println("OutputData");	//*****
-		System.out.println("w0" + outputData.w0);		//****
-		System.out.println("w0" + outputData.w);		//****
+		OutputData outputData = sgd.learn(inputData, target, 20, "regression");
+		//System.out.println("OutputData");	//*****
+		//System.out.println("w0" + outputData.w0);		//****
+		//System.out.println("w0" + outputData.w);		//****
 	}
 }
