@@ -84,7 +84,7 @@ public class SGD_Regression_Test {
 		Target target = new Target(tg_regression);
 		//Target target = new Target(tg_classification);
 		SGD sgd = new SGD();
-		OutputData outputData = sgd.learn(inputData, target, 20, "regression");
+		OutputData outputData = sgd.learn(inputData, target, 20, "regression", "fix");
 		//System.out.println("OutputData");	//*****
 		//System.out.println("w0" + outputData.w0);		//****
 		//System.out.println("w0" + outputData.w);		//****

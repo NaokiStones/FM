@@ -14,7 +14,7 @@ public class SGD {
     private double[] adaWGrad;
     private double[][] adaVGrad;
 
-    private double eta = 0.1; // reg0, number:by intuition
+    //private double eta = 0.1; // reg0, number:by intuition
     private double lambda0;
     private ArrayList<Double> lambdaW = new ArrayList<Double>();
     private double[][] lambdaV;
@@ -32,9 +32,11 @@ public class SGD {
     private int groupNum;
     private ArrayList<Double> results = new ArrayList<Double>();
     private double alpha = 0.5;
-    private double t0 = 2;
+    private double t0 = 0.005;
     private double power_t = 0.1;
     private double adaInitNum = 0.1;
+    
+    private Eta eta;
 
     public SGD() {
         w0 = 0;
@@ -92,7 +94,7 @@ public class SGD {
                 ret = 1.0;
             }
         }
-        //System.out.println("ret:" + ret);//************************
+        System.out.println("ret:" + ret);//************************
         if(Double.isNaN(ret)) {
             System.out.println("NaN!");
             System.exit(1);
@@ -288,15 +290,15 @@ public class SGD {
         return ret;
     }
 
-    public static double eta(double eta0, double gg) {
-        double ret = eta0 / Math.sqrt(1.d + gg);
-        if(Double.isNaN(ret)) {
-            throw new IllegalStateException("NaN");
-        }
-        return ret;
-    }
+    //public static double eta(double eta0, double gg) {
+    //    double ret = eta0 / Math.sqrt(1.d + gg);
+    //    if(Double.isNaN(ret)) {
+    //        throw new IllegalStateException("NaN");
+    //    }
+    //    return ret;
+    //}
 
-    public OutputData learn(InputData id, Target tg, int k, String task) {
+    public OutputData learn(InputData id, Target tg, int k, String task, String etaUpdateType) {
         this.k = k;
         OutputData ret;
 
@@ -306,12 +308,28 @@ public class SGD {
         this.task = task;
         this.groupRangeUpperLimit = id.getGroupRangeUpperLimit();
 
+        
+        if(etaUpdateType.equals("ada")){
+        	eta = new EtaDouble(etaUpdateType, col, k, alpha, adaInitNum);
+        }else if(etaUpdateType.equals("power")){
+        	// String updateType, double alpha, double tp
+        	eta = new EtaDouble(etaUpdateType, alpha, power_t);
+        }else if(etaUpdateType.equals("time")){
+        	// String updateType, double t0
+        	eta = new EtaDouble(etaUpdateType, t0);
+        }else if(etaUpdateType.equals("fix")){
+        	eta = new EtaDouble(etaUpdateType);
+        }else{
+        	System.out.println("Task not found");
+        	System.exit(1);
+        }
+        
         init();
 
         int t = 0;
-        double eta0 = 0.005;
+        //double eta0 = 0.005;
 
-        for(int iter = 0; iter < 100; iter++) { // tmp
+        for(int iter = 0; iter < 30; iter++) { // tmp
             System.out.println(iter); //***********************
             double diff = 0;
             for(int p = 0; p < id.getRow(); p++, t++) {
@@ -321,19 +339,20 @@ public class SGD {
                 Map<Integer, Double> record = id.getOneRecord(p); // pick up one record
                 double y = tg.getOneTarget(p); // pickup the target for the chosen record
 
-                w0 = w0 - eta(eta0, ada0Grad) * (calcGrad(0, record, y, "w0") + 2 * lambda0 * w0);
+                
+                w0 = w0 - eta.getEta(etaUpdateType, 0)/*eta(eta0, ada0Grad)*/ * (calcGrad(0, record, y, "w0") + 2 * lambda0 * w0);
                 //System.out.println("w0:" + w0);//**************
 
                 for(int i : record.keySet()) {
                     double gradWi = calcGrad(i, record, y, "w"); // dloss(predict("w", i), y);
                     int pi = pi(i);
-                    double nextWi = w[i] - eta(eta0, adaWGrad[i])
+                    double nextWi = w[i] - eta.getEta(etaUpdateType, i)/*eta(eta0, adaWGrad[i])*/
                             * (gradWi * adaW(i) + 2 * lambdaW.get(pi) * w[i]);
                     w[i] = nextWi;
                     for(int f = 0; f < k; f++) {
                         double gradVij = dloss(predict(y, record), y, i, f, "v", record); //calcGradV(i, f, pi, y, "v"); // dloss(predict("v", i, f), y)
                         //System.out.println("key:" + key +  ", f:" + f + ", groupOfKey:" + groupOfKey); //******************
-                        V[i][f] -= eta(eta0, adaVGrad[i][f])
+                        V[i][f] -= eta.getEta(etaUpdateType, i, f)/*eta(eta0, adaVGrad[i][f])*/
                                 * (gradVij + 2 * lambdaV[f][pi] * V[i][f]);
                         // System.out.println("V[key][f]:" + V[key][f]); //***************
                     }

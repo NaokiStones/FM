@@ -63,4 +63,34 @@ public class EtaFloat extends Eta {
 		}
 		return ret;
 	}
+
+
+	@Override
+	public void updateEta(String s, double gt, int... args) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public double getEta(String s, int... indexes) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public void updateEtaFloat(String s, float gt, int... args) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public float getEtaFloat(String s, int... indexes) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 }
