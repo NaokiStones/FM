@@ -94,7 +94,7 @@ public class SGD {
                 ret = 1.0;
             }
         }
-        System.out.println("ret:" + ret);//************************
+        //System.out.println("ret:" + ret);//************************
         if(Double.isNaN(ret)) {
             System.out.println("NaN!");
             System.exit(1);
@@ -339,7 +339,7 @@ public class SGD {
                 Map<Integer, Double> record = id.getOneRecord(p); // pick up one record
                 double y = tg.getOneTarget(p); // pickup the target for the chosen record
 
-                
+                double grad0 = calcGrad(0, record, y, "w0");
                 w0 = w0 - eta.getEta(etaUpdateType, 0)/*eta(eta0, ada0Grad)*/ * (calcGrad(0, record, y, "w0") + 2 * lambda0 * w0);
                 //System.out.println("w0:" + w0);//**************
 

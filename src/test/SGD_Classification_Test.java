@@ -56,7 +56,7 @@ public class SGD_Classification_Test {
 
 		Target target = new Target(tg_classification);
 		SGD sgd = new SGD();
-		OutputData outputData = sgd.learn(inputData, target, 20, "classification");
+		OutputData outputData = sgd.learn(inputData, target, 20, "classification", "ada");
 		//System.out.println("OutputData");	//*****
 		//System.out.println("w0" + outputData.w0);		//****
 		//System.out.println("w0" + outputData.w);		//****
