@@ -75,7 +75,8 @@ public class EtaDouble extends Eta {
 				accV[idxI][idxF] += gt;
 				ret = (alpha) / (accV[idxI][idxF]);
 			}else{
-				System.out.println("Eta:updateAndGetEta:: cannot find defferentiater");
+				System.out.println("differentiater:" + s);
+				System.out.println("Eta:updateAndGetEta:: cannot find differentiater");
 				System.exit(1);
 			}
 		}else if(updateType.equals("power")){

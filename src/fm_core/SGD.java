@@ -329,7 +329,7 @@ public class SGD {
         int t = 0;
         //double eta0 = 0.005;
 
-        for(int iter = 0; iter < 30; iter++) { // tmp
+        for(int iter = 0; iter < 20; iter++) { // tmp
             System.out.println(iter); //***********************
             double diff = 0;
             for(int p = 0; p < id.getRow(); p++, t++) {

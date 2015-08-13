@@ -225,7 +225,8 @@ public class SGD_float {
         init();
 
         int t = 0;
-        for(int iter = 0; iter < 100; iter++) { // tmp
+        for(int iter = 0; iter < 20; iter++) { // tmp
+
             System.out.println(iter); //***********************
             float diff = 0;
             for(int p = 0; p < id.getRow(); p++, t++) {
@@ -250,7 +251,6 @@ public class SGD_float {
                         V[i][f] -= eta * (gradVij + 2 * lambdaV[f][pi] * V[i][f]);
                         // System.out.println("V[key][f]:" + V[key][f]); //***************
                     }
-
                 }
                 if(task.equals("regression")) {
                     float pred = predict(y, record);
